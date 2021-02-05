@@ -1,7 +1,49 @@
 /** CSS personel **/
+.bouton {
+  background-color: blue;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.fiche {
+  background-color: grey;
+  margin-left: 200px;
+  margin-right: 200px;
+  padding: 100px;
+  border-radius: 10px;
+}
+
+.mainTitle {
+  color: blue;
+}
+
+.nom {
+  color: blue;
+}
+
 .tableConsultation {
   width: 100%;
 }
+
+td {
+  padding: 5px;
+}
+
+th {
+  background-color: blue;
+  color: white;
+  padding: 10px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+}
+
 
 /** CSS de base **/
 .App {

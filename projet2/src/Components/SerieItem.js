@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 
 class SerieItem extends Component {
-  
+  handleClick = () => {
+    this.props.clickSerie(this.props.id);
+  }
+
   render() {
-    const { nom, cote, nbSaisons, description, plateforme } = this.props;
+    const { id, nom, cote, nbSaisons, description, plateforme} = this.props;
     return (
-      <tr key={nom}>
-        <td>{nom}</td>
+      <tr key={id}>
+        <td className="nom" onClick={this.handleClick}>{nom}</td>
         <td>{cote}</td>
         <td>{nbSaisons}</td>
         <td>{plateforme}</td>
