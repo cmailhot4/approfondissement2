@@ -28,13 +28,27 @@ class App extends Component {
     return (
       <div className="App">
         <h1>Projet d'appronfondissement 2</h1>
-        { 
-          this.state.series.map(serie => {
-            return (
-              <SerieItem key={serie.nom} {...serie} />
-            );
-          })
-        }
+        <table className="tableConsultation">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Cote</th>
+              <th>Nombre de saisons</th>
+              <th>Description</th>
+              <th>Plateforme</th>
+              <th>Modifier/Supprimer</th>
+            </tr>
+          </thead>
+          <tbody>
+          { 
+            this.state.series.map(serie => {
+              return (
+                <SerieItem key={serie.nom} {...serie} />
+              );
+            })
+          }
+          </tbody>
+        </table>
       </div>
     )
   }

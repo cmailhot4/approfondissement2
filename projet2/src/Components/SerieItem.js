@@ -8,10 +8,14 @@ class SerieItem extends Component {
   render() {
     const { nom, cote, nbSaisons, description, plateforme } = this.props;
     return (
-      <div>
-        <span>{nom}</span>
-        <span>{cote}</span>
-      </div>
+      <tr key={nom}>
+        <td>{nom}</td>
+        <td>{cote}</td>
+        <td>{nbSaisons}</td>
+        <td>{description}</td>
+        <td>{plateforme}</td>
+        <td>Boutons à mettre ici</td>
+      </tr>
     );
   }
 }

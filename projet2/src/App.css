@@ -1,3 +1,9 @@
+/** CSS personel **/
+.tableConsultation {
+  width: 100%;
+}
+
+/** CSS de base **/
 .App {
   text-align: center;
 }
