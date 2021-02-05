@@ -12,16 +12,15 @@ class App extends Component {
     }
   }
 
-  componentWillMount() {
-    /*fetch('http://localhost:9000/api')
-      .then(res => res.json())
-      .catch(err => err);*/
-    this.setState({
-      series: [
-        {nom: "The Office", cote: 10.0, nbSaisons: 9, description: "", plateforme: "Netflix"},
-        {nom: "Breaking Bad", cote: 9.0, nbSaisons: 5, description: "", plateforme: "Netflix"}
-      ]
-    });
+  // Lorsque le composant App.js est ajouté au DOM, on va chercher les données de l'API
+  // et on met à jour le state avec les données de l'API.
+  componentDidMount() {
+    fetch('http://localhost:9000/api')
+      .then((res) => res.json())
+      .then(res => {
+        this.setState({ series: res.data });
+      })
+      .catch(err => err);
   }
 
   render() {
@@ -34,7 +33,6 @@ class App extends Component {
               <th>Nom</th>
               <th>Cote</th>
               <th>Nombre de saisons</th>
-              <th>Description</th>
               <th>Plateforme</th>
               <th>Modifier/Supprimer</th>
             </tr>
@@ -53,12 +51,5 @@ class App extends Component {
     )
   }
 }
-/*{ 
-  this.state.series.map(serie => {
-    return (
-      <SerieItem key={serie.nom} {...serie} />
-    );
-  })
-}*/
 
 export default App;
