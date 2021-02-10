@@ -1,10 +1,4 @@
 /** CSS personel **/
-.bouton {
-  background-color: blue;
-  color: white;
-  border-radius: 10px;
-  padding: 10px;
-}
 
 .fiche {
   background-color: grey;
@@ -12,6 +6,10 @@
   margin-right: 200px;
   padding: 100px;
   border-radius: 10px;
+}
+
+label {
+  padding-right: 10px;
 }
 
 .mainTitle {

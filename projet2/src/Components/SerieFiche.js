@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Button from 'react-bootstrap/Button';
 
 class SerieFiche extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class SerieFiche extends Component {
   }
 
   render() {
-    const {id, clickBouton} = this.props;
+    const { clickBouton } = this.props;
     const { nom, cote, nbSaisons, description, plateforme } = this.state.serie;
 
     return (
@@ -32,7 +33,7 @@ class SerieFiche extends Component {
         <h4>Cote: {cote} - Nombre de saisons: {nbSaisons}</h4>
         <p>{description}</p>
         <h4>Disponible sur: {plateforme}</h4>
-        <button className="bouton" onClick={clickBouton}>Revenir à la liste</button>
+        <Button variant="primary" onClick={clickBouton}>Revenir à la liste</Button>
       </div>
     );
   }
