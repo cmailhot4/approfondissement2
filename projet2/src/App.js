@@ -5,6 +5,7 @@ import './App.css';
 import SerieItem from './Components/SerieItem';
 import SerieFiche from './Components/SerieFiche';
 import FormAjout from './Components/FormAjout';
+import FormModifier from './Components/FormModifier';
 
 class App extends Component {
   constructor(props) {
@@ -13,14 +14,18 @@ class App extends Component {
     this.state = {
       series: [],
       afficherFiche: false,
+      afficherFormAjout: false,
+      afficherFormModification: false,
       indexFiche: 1
     }
 
     this.onClickSerie = this.onClickSerie.bind(this);
-    this.onClickBouton = this.onClickBouton.bind(this);
+    this.onClickBoutonRetour = this.onClickBoutonRetour.bind(this);
+    this.onClickModifier = this.onClickModifier.bind(this);
     this.onClickSupprimer = this.onClickSupprimer.bind(this);
     this.onClickFormAjout = this.onClickFormAjout.bind(this);
-    this.onClickAjouterSerie = this.onClickAjouterSerie.bind(this);
+    this.onClickSubmitForm = this.onClickSubmitForm.bind(this);
+    this.findSerie = this.findSerie.bind(this);
   }
 
   // Lorsque le composant App.js est ajouté au DOM, on va chercher les données de l'API
@@ -33,6 +38,7 @@ class App extends Component {
           series: res.data,
           afficherFiche: false,
           afficherFormAjout: false,
+          afficherFormModification: false,
           indexFiche: 1
         });
       })
@@ -45,19 +51,32 @@ class App extends Component {
       series: this.state.series,
       afficherFiche: true,
       afficherFormAjout: false,
+      afficherFormModification: false,
       indexFiche: index
     });
   }
 
   // Affiche la liste des séries
-  onClickBouton() {
-    console.log("bouton click");
+  onClickBoutonRetour() {
     this.setState({
       series: this.state.series,
       afficherFiche: false,
       afficherFormAjout: false,
+      afficherFormModification: false,
       indexFiche: 1
     });
+  }
+
+  // Affiche le formulaire de modification
+  onClickModifier(id) {
+    console.log("Affichage du formulaire de modification...");
+    this.setState({
+      series: this.state.series,
+      afficherFiche: false,
+      afficherFormAjout: false,
+      afficherFormModification: true,
+      indexFiche: id
+    })
   }
 
   // Appel l'API pour supprimer la série
@@ -84,19 +103,37 @@ class App extends Component {
       series: this.state.series,
       afficherFiche: false,
       afficherFormAjout: true,
+      afficherFormModification: false,
       indexFiche: 1
     });
   }
 
-  // Ajoute la série
-  onClickAjouterSerie() {
+  // Affiche la liste mise à jour des séries
+  onClickSubmitForm() {
     this.componentDidMount();
     this.setState({
       series: this.state.series,
       afficherFiche: false,
       afficherFormAjout: false,
+      afficherFormModification: false,
       indexFiche: 1
     });
+  }
+
+  // Permet de retourner les informations d'une série selon son id
+  findSerie(id) {
+    // La valeur par défaut est la première série de la liste
+    let laSerie = this.state.series[0];
+
+    // Change les infos par défaut par les infos de la série recherchée
+    this.state.series.forEach(serie => {
+      if (serie.id === id) {
+        laSerie = serie;
+      }
+    });
+
+    // Retourne la série
+    return laSerie;
   }
 
   render() {
@@ -117,7 +154,7 @@ class App extends Component {
           {
             this.state.series.map(serie => {
               return (
-                <SerieItem key={serie.id} {...serie} clickSerie={this.onClickSerie} clickSupprimer={this.onClickSupprimer} />
+                <SerieItem key={serie.id} {...serie} clickSerie={this.onClickSerie} clickModifier={this.onClickModifier} clickSupprimer={this.onClickSupprimer} />
               );
             })
           }
@@ -129,13 +166,21 @@ class App extends Component {
 
     // Si le nom d'une série a été cliquée, on change ce qui est affiché pour afficher seulement la série en question
     if (this.state.afficherFiche) {
-      affichage = <SerieFiche key={this.state.indexFiche} id={this.state.indexFiche} clickBouton={this.onClickBouton}/>
+      affichage = <SerieFiche key={this.state.indexFiche} id={this.state.indexFiche} clickBoutonRetour={this.onClickBoutonRetour}/>
     }
 
     // Si le bouton pour ajouter une série a été cliqué, on affiche le formulaire d'ajout
     if (this.state.afficherFormAjout) {
       affichage = (
-        <FormAjout rafraichirListe={this.onClickAjouterSerie}/>
+        <FormAjout rafraichirListe={this.onClickSubmitForm} clickBoutonRetour={this.onClickBoutonRetour}/>
+      );
+    }
+
+    // Si le bouton pour modifier une série a été cliqué, on affiche le formulaire de modification
+    if (this.state.afficherFormModification) {
+      let serie = this.findSerie(this.state.indexFiche);
+      affichage = (
+        <FormModifier id={this.state.indexFiche} {...serie} rafraichirListe={this.onClickSubmitForm} clickBoutonRetour={this.onClickBoutonRetour} />
       );
     }
 

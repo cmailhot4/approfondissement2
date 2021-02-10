@@ -11,7 +11,7 @@ class SerieFiche extends Component {
   }
 
   // Appel à l'api pour sortir les données d'une série à l'aide de son id
-  componentWillMount() {
+  componentDidMount() {
     const url = 'http://localhost:9000/api/' + this.props.id;
     fetch(url)
       .then((res) => res.json())
@@ -24,16 +24,17 @@ class SerieFiche extends Component {
   }
 
   render() {
-    const { clickBouton } = this.props;
+    const { clickBoutonRetour } = this.props;
     const { nom, cote, nbSaisons, description, plateforme } = this.state.serie;
 
     return (
       <div className="fiche">
         <h1>{nom}</h1>
-        <h4>Cote: {cote} - Nombre de saisons: {nbSaisons}</h4>
-        <p>{description}</p>
-        <h4>Disponible sur: {plateforme}</h4>
-        <Button variant="primary" onClick={clickBouton}>Revenir à la liste</Button>
+        <h5>Cote: {cote}</h5>
+        <h5>Saisons: {nbSaisons}</h5>
+        <p className="resume">{description}</p>
+        <h5>Disponible sur: {plateforme}</h5>
+        <Button variant="primary" onClick={clickBoutonRetour}>Revenir à la liste</Button>
       </div>
     );
   }

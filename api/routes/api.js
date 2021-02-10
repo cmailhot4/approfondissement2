@@ -54,29 +54,37 @@ router.post("/", function(req, res, next) {
 
     var serie = req.body;
 
-    //TODO: Vérifications des champs
+    // Vérifications des champs
+    var validation = verificationData(serie);
 
-    // Connection à la BD
-    var connection = connect();
+    // Si les champs sont valides
+    if(validation) {
+        // Connection à la BD
+        var connection = connect();
 
-    // Préparation de la requête
-    var values = [serie.nom, serie.cote, serie.nbSaisons, serie.description, serie.plateforme];
-    var request = 'INSERT INTO projet2.series (nom, cote, nbSaisons, description, plateforme) VALUES (?, ?, ?, ?, ?);';
+        // Préparation de la requête
+        var values = [serie.nom, serie.cote, serie.nbSaisons, serie.description, serie.plateforme];
+        var request = 'INSERT INTO projet2.series (nom, cote, nbSaisons, description, plateforme) VALUES (?, ?, ?, ?, ?);';
 
-    // Requête
-    connection.query(request, values, function(err, result, fields) {
-        // Envoi de la réponse json
-        if (err){
-            // S'il y a eu une erreur
-            res.send({"success": false, "msg": "Erreur lors de l'ajout de la série. (code 2)", "error": err});
-        } else {
-            // Si la requête a fonctionnée
-            res.send({"success": true, "affectedRows": res.affectedRows});
-        }
-    });
+        // Requête
+        connection.query(request, values, function(err, result, fields) {
+            // Envoi de la réponse json
+            if (err){
+                // S'il y a eu une erreur
+                res.send({"success": false, "msg": "Erreur lors de l'ajout de la série. (code 2)", "error": err});
+            } else {
+                // Si la requête a fonctionnée
+                res.send({"success": true, "affectedRows": res.affectedRows});
+            }
+        });
 
-    // Ferme la connection à la BD
-    connection.end();
+        // Ferme la connection à la BD
+        connection.end();
+    } else {
+        // Si un ou des champs ne sont pas valides
+        res.send({"success": false, "msg": "Erreur lors de l'ajout de la série. (code 2.1)"});
+    }
+    
 });
 
 // Modification d'une série
@@ -84,29 +92,40 @@ router.put("/:idSerie", function(req, res, next) {
     console.log("Modification d'une série");
 
     var serie = req.body;
-    //TODO: Vérifications des valeurs des champs
+    var id = req.params.idSerie;
+
+    // Vérifications des valeurs des champs
+    var validation = verificationData(serie);
+
+    // Si les champs sont valides
+    if(validation) {
+        // Connexion à la BD
+        var connection = connect();
+
+        // Préparation de la requête
+        var values = [serie.nom, serie.cote, serie.nbSaisons, serie.description, serie.plateforme, id];
+        var request = "UPDATE projet2.series SET nom = ?, cote = ?, nbSaisons = ?, description = ?, plateforme = ? WHERE id = ?;"
+
+        // Requête
+        connection.query(request, values, function(err, result, fields) {
+            // Envoie de la réponse json
+            if (err) {
+                // S'il y a une erreur
+                res.send({"success": false, "msg": "Erreur lors de la modification de la série. (code 3)"});
+            } else {
+                // Si la requête a fonctionnée
+                res.send({"success": true, "affectedRows": result.affectedRows});
+            }
+        });
+
+        // Ferme la connection à la BD
+        connection.end();
+    } else {
+        // Si un ou des champs ne sont pas valides
+        res.send({"success": false, "msg": "Erreur lors de la modification de la série. (code 3.1)"})
+    }
     
-    // Connexion à la BD
-    var connection = connect();
-
-    // Préparation de la requête
-    var values = [serie.nom, serie.cote, serie.nbSaisons, serie.description, serie.plateforme, serie.id];
-    var request = "UPDATE projet2.series SET nom = ?, cote = ?, nbSaisons = ?, description = ?, plateforme = ? WHERE id = ?;"
-
-    // Requête
-    connection.query(request, values, function(err, result, fields) {
-        // Envoie de la réponse json
-        if (err) {
-            // S'il y a une erreur
-            res.send({"success": false, "msg": "Erreur lors de la modification de la série. (code 3)"});
-        } else {
-            // Si la requête a fonctionnée
-            res.send({"success": true, "affectedRows": result.affectedRows});
-        }
-    });
-
-    // Ferme la connection à la BD
-    connection.end();
+    
 });
 
 // Recherche d'une série à l'aide d'un id
@@ -162,5 +181,55 @@ router.delete("/:idSerie", function(req, res, next) {
     // Ferme la connection à la BD
     connection.end();
 });
+
+function verificationData(data) {
+    // Vérification du nom
+    if(!data.nom) {
+        // si le nom est vide
+        return false;
+      } else {
+        if(data.nom.length > 100) {
+          // si le nom est trop long
+          return false;
+        }
+      }
+  
+      // Vérification de la cote
+      if(!data.cote) {
+        // si la cote est vide
+        return false;
+      } else {
+        if(data.cote > 10 || data.cote < 0) {
+          // si la cote est plus grande que 10.0 ou plus petite que 0
+          return false;
+        }
+      }
+  
+      // Vérification du nombre de saisons
+      if(!data.nbSaisons) {
+        // si le nombre de saisons est vide
+        return false;
+      } else {
+        if(data.nbSaisons > 30 || data.nbSaisons < 1) {
+          // si le nombre de saisons est négatif ou plus grand que 30
+          return false;
+        }
+      }
+  
+      // Vérification de la plateforme
+      if(data.plateforme.length > 255) {
+        // si la longueur de la plateforme est plus grande que 255
+        return false;
+      }
+  
+      // Vérification de la description
+      if(data.description.length > 16777215) {
+        // si la description est plus grande que le max accordé par un mediumtext
+        return false;
+      }
+  
+      // si tous les champs sont valides
+      return true;
+}
 
 module.exports = router;

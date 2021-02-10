@@ -2,19 +2,18 @@ import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
 import { Row } from 'react-bootstrap';
 
-//CSS
-import '../css/FormAjout.css';
-
-class FormAjout extends Component {
+class FormModifier extends Component {
   constructor(props) {
     super(props)
 
+    const { nom, cote, nbSaisons, plateforme, description } = this.props;
+
     this.state = {
-      nom: '',
-      cote: 0.0,
-      nbSaisons: 0,
-      description: '',
-      plateforme: ''
+      nom: nom,
+      cote: cote,
+      nbSaisons: nbSaisons,
+      plateforme: plateforme,
+      description: description
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -25,15 +24,16 @@ class FormAjout extends Component {
   handleChange(event) {
     let nam = event.target.name;
     let val = event.target.value;
-    this.setState({ [nam]: val });
+    this.setState({ [nam]: val })
   }
 
-  // Ajoute la série via l'API
+  // Modifie la série via l'API
   handleSubmit(event) {
     event.preventDefault();
-    
+
     // data à envoyer à l'API
     let data = {
+      id: this.props.id,
       nom: this.state.nom,
       cote: this.state.cote,
       nbSaisons: this.state.nbSaisons,
@@ -41,21 +41,24 @@ class FormAjout extends Component {
       description: this.state.description
     }
 
+    const url = 'http://localhost:9000/api/' + this.props.id;
+
     //TODO: Vérification côté client ici
     console.log("Data: ", data);
     const dataValide = this.verificationData(data);
 
+    // Si les informations sont valides
     if(dataValide) {
       // call à l'API
-      fetch('http://localhost:9000/api/', {
-        method: 'POST',
+      fetch(url, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       }).then(res => res.json())
         .then(data => {
           if(data.success) {
             // Affiche la liste des séries
-            alert("Série ajoutée avec succès.");
+            alert("Série modifiée avec succès.");
             this.props.rafraichirListe();
           } else {
             // Affiche un message d'erreur
@@ -116,47 +119,50 @@ class FormAjout extends Component {
       return false;
     }
 
+    // si tous les champs sont valides
     return true;
   }
 
   render() {
-    return(
+    const { nom, cote, nbSaisons, plateforme, description, clickBoutonRetour } = this.props;
+
+    return (
       <div className="wrapper">
         <Row>
-          <Button variant="danger" onClick={this.props.clickBoutonRetour}>Annuler</Button>
+          <Button variant="danger" onClick={clickBoutonRetour}>Annuler</Button>
         </Row>
         <form onSubmit={this.handleSubmit}>
-          <fieldset>
+        <fieldset>
             <Row>
-              <h2>Ajouter une nouvelle série</h2>
+              <h2>Modifier la série {this.props.nom}</h2>
             </Row>
 
             <Row className="row">
               <label>Nom*</label>
-              <input type="text" maxLength="100" name="nom" placeholder="Entrez le nom" onChange={this.handleChange} required />
+              <input type="text" maxLength="100" name="nom" placeholder="Entrez le nom" defaultValue={nom} onChange={this.handleChange} required />
             </Row>
             
             <Row>
               <label>Cote*</label>
-              <input type="number" step="0.1" min="0" max="10" name="cote" placeholder="0.0" onChange={this.handleChange} required />
+              <input type="number" step="0.1" min="0" max="10" name="cote" placeholder="0.0" defaultValue={cote} onChange={this.handleChange} required />
             </Row>
             <Row>
               <label>Nombre de saisons*</label>
-              <input type="number" name="nbSaisons" min="1" max="30" placeholder="1" onChange={this.handleChange} required />
+              <input type="number" name="nbSaisons" min="1" max="30" placeholder="1" defaultValue={nbSaisons} onChange={this.handleChange} required />
             </Row>
           
             <Row>
               <label>Plateforme</label>
-              <input type="text" name="plateforme" maxLength="255" placeholder="Netflix" onChange={this.handleChange} />
+              <input type="text" name="plateforme" maxLength="255" placeholder="Netflix" defaultValue={plateforme} onChange={this.handleChange} />
             </Row>
           
             <Row>
               <label>Description</label>
-              <textarea name="description" rows="5" cols="100" maxLength="16777215" placeholder="Entrez une description (facultatif)" onChange={this.handleChange} />
+              <textarea name="description" rows="5" cols="100" maxLength="16777215" placeholder="Entrez une description (facultatif)" defaultValue={description ? description : ""} onChange={this.handleChange} />
             </Row>
           </fieldset>
           <Row>
-            <Button variant="primary" type="submit">Ajouter la série</Button>
+            <Button variant="primary" type="submit">Modifier la série</Button>
           </Row>
         </form>
       </div>
@@ -164,4 +170,4 @@ class FormAjout extends Component {
   }
 }
 
-export default FormAjout;
+export default FormModifier;
